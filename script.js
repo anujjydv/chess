@@ -1,9 +1,8 @@
 const boardElement = document.getElementById('chessboard');
 let selectedSquare = null;
 let turn = 'white';
-let isAnimating = false; // block clicks during animation
+let isAnimating = false; 
 
-// ─── Timer State ──────────────────────────────────────────────────────────────
 const GAME_MODES = {
     bullet:   { label: 'Bullet',    seconds: 60,  increment: 0, icon: '⚡' },
     bullet1i: { label: '1+1',       seconds: 60,  increment: 1, icon: '⚡' },
@@ -20,13 +19,10 @@ let timerInterval = null;
 let gameMode = null;
 let gameActive = false;
 
-// ─── DOM Setup ────────────────────────────────────────────────────────────────
-
 function buildGameWrapper() {
     const wrapper = document.createElement('div');
     wrapper.id = 'game-wrapper';
 
-    // P2 (black) on top — shows pieces black has captured (white pieces)
     const topPanel = document.createElement('div');
     topPanel.className = 'timer-panel top';
     topPanel.id = 'panel-black';
@@ -36,7 +32,6 @@ function buildGameWrapper() {
         <span class="timer-display" id="timer-black">--:--</span>
         <span class="mode-badge" id="mode-label"></span>`;
 
-    // P1 (white) on bottom — shows pieces white has captured (black pieces)
     const botPanel = document.createElement('div');
     botPanel.className = 'timer-panel bottom';
     botPanel.id = 'panel-white';
@@ -52,15 +47,13 @@ function buildGameWrapper() {
     wrapper.appendChild(botPanel);
 }
 
-// ─── Captured Pieces Tracking ─────────────────────────────────────────────────
-
-const capturedPieces = { white: [], black: [] }; // white = captured BY white (black pieces), black = captured BY black (white pieces)
+const capturedPieces = { white: [], black: [] }; 
 
 const pieceOrder = ['q', 'r', 'b', 'n', 'p'];
 const pieceValue = { q: 9, r: 5, b: 3, n: 3, p: 1 };
 
 function addCapturedPiece(pieceCode) {
-    const color = getPieceColor(pieceCode); // color of captured piece
+    const color = getPieceColor(pieceCode); 
     const capturedBy = color === 'black' ? 'white' : 'black';
     capturedPieces[capturedBy].push(pieceCode.toLowerCase());
     renderCapturedPieces(capturedBy);
@@ -71,7 +64,6 @@ function renderCapturedPieces(capturedBy) {
     const strip = document.getElementById(stripId);
     if (!strip) return;
 
-    // Sort by piece value descending
     const sorted = [...capturedPieces[capturedBy]].sort(
         (a, b) => pieceValue[b] - pieceValue[a]
     );
@@ -79,7 +71,7 @@ function renderCapturedPieces(capturedBy) {
     strip.innerHTML = '';
     sorted.forEach(code => {
         const img = document.createElement('img');
-        // Show actual color: white captures black pieces, black captures white pieces
+        
         const actualCode = capturedBy === 'white' ? code : code.toUpperCase();
         img.src = pieceImages[actualCode];
         img.className = 'captured-piece-img';
@@ -95,9 +87,6 @@ function resetCapturedPieces() {
     if (s1) s1.innerHTML = '';
     if (s2) s2.innerHTML = '';
 }
-
-
-// ─── Timer Helpers ────────────────────────────────────────────────────────────
 
 function formatTime(secs) {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -159,10 +148,6 @@ function applyIncrement(color) {
     }
 }
 
-// ─── Takeback ─────────────────────────────────────────────────────────────────
-
-// ─── Insufficient Material Detection ─────────────────────────────────────────
-
 function hasInsufficientMaterial(board, color) {
     const pieces = [];
     for (let r = 0; r < 8; r++)
@@ -170,12 +155,10 @@ function hasInsufficientMaterial(board, color) {
             const p = board[r][c];
             if (p && getPieceColor(p) === color) pieces.push(p.toLowerCase());
         }
-    if (pieces.length === 1) return true; // lone king
-    if (pieces.length === 2 && (pieces.includes('n') || pieces.includes('b'))) return true; // K+N or K+B
+    if (pieces.length === 1) return true; 
+    if (pieces.length === 2 && (pieces.includes('n') || pieces.includes('b'))) return true; 
     return false;
 }
-
-// ─── Game Mode Modal ──────────────────────────────────────────────────────────
 
 function showModeModal() {
     const overlay = document.createElement('div');
@@ -185,7 +168,6 @@ function showModeModal() {
     modal.id = 'mode-modal';
     modal.innerHTML = '<div style="font-size:52px;line-height:1;margin-bottom:8px;color:#d4af37;text-shadow:0 0 20px rgba(212,175,55,0.5);">♛</div><h2>Checkz</h2><p>Pick a format and play</p><div class="modal-divider"></div>';
 
-    // Bullet — base + 1+1
     addModeRow(modal, overlay, {
         icon: '⚡', label: 'Bullet',
         chips: [
@@ -194,7 +176,6 @@ function showModeModal() {
         ]
     });
 
-    // Blitz — 3, 3+2, 5, 5+2
     addModeRow(modal, overlay, {
         icon: '🔥', label: 'Blitz',
         chips: [
@@ -205,7 +186,6 @@ function showModeModal() {
         ]
     });
 
-    // Rapid — base + 10+2
     addModeRow(modal, overlay, {
         icon: '⏱️', label: 'Rapid',
         chips: [
@@ -266,7 +246,6 @@ const hasMoved = {
     BR_left: false, BR_right: false,
 };
 
-// en passant: stores { row, col } of the square a pawn can be captured on, or null
 let enPassantTarget = null;
 
 const pieceImages = {
@@ -294,8 +273,6 @@ const initialBoardSetup = [
     ['P','P','P','P','P','P','P','P'],
     ['R','N','B','Q','K','B','N','R']
 ];
-
-// ─── Board Creation ───────────────────────────────────────────────────────────
 
 function createBoard() {
     boardElement.innerHTML = '';
@@ -336,23 +313,15 @@ function makePieceImg(pieceCode) {
     return img;
 }
 
-// ─── Animation ────────────────────────────────────────────────────────────────
-
-/**
- * Slides a piece image from fromSquare to toSquare, then calls onDone.
- * During the flight the real piece is hidden so it doesn't show in both places.
- */
 function animateMove(pieceImg, fromSquare, toSquare, onDone) {
     const boardRect = boardElement.getBoundingClientRect();
     const fromRect  = fromSquare.getBoundingClientRect();
     const toRect    = toSquare.getBoundingClientRect();
 
-    // Create a clone that flies over the board
     const clone = document.createElement('img');
     clone.src = pieceImg.src;
     clone.classList.add('piece-flying');
 
-    // Start position (relative to board)
     const startLeft = fromRect.left - boardRect.left + (fromRect.width  - 66) / 2;
     const startTop  = fromRect.top  - boardRect.top  + (fromRect.height - 66) / 2;
     const endLeft   = toRect.left   - boardRect.left + (toRect.width    - 66) / 2;
@@ -361,12 +330,10 @@ function animateMove(pieceImg, fromSquare, toSquare, onDone) {
     clone.style.left = startLeft + 'px';
     clone.style.top  = startTop  + 'px';
 
-    // Hide the real piece while flying
     pieceImg.style.opacity = '0';
 
     boardElement.appendChild(clone);
 
-    // Trigger transition on next frame
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             clone.style.left = endLeft + 'px';
@@ -381,15 +348,12 @@ function animateMove(pieceImg, fromSquare, toSquare, onDone) {
     }, { once: true });
 }
 
-/** Shake the selected square to signal an illegal move */
 function shakeSquare(square) {
     square.classList.remove('shake');
-    void square.offsetWidth; // reflow to restart animation
+    void square.offsetWidth; 
     square.classList.add('shake');
     square.addEventListener('animationend', () => square.classList.remove('shake'), { once: true });
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getPieceColor(pieceCode) {
     if (!pieceCode) return null;
@@ -439,7 +403,7 @@ function applyMove(board, fr, fc, tr, tc) {
     const piece = b[fr][fc];
     b[tr][tc] = piece;
     b[fr][fc] = '';
-    // Remove en passant captured pawn
+    
     if (piece && piece.toLowerCase() === 'p' && fc !== tc && b[tr][tc] !== '' && enPassantTarget
         && tr === enPassantTarget.row && tc === enPassantTarget.col) {
         const capturedRow = piece === piece.toUpperCase() ? tr + 1 : tr - 1;
@@ -455,8 +419,6 @@ function findKing(board, color) {
             if (board[r][c] === k) return { row: r, col: c };
     return null;
 }
-
-// ─── Attack / Check ───────────────────────────────────────────────────────────
 
 function canPieceAttack(board, fr, fc, tr, tc, pieceCode) {
     const rd = tr - fr, cd = tc - fc;
@@ -489,7 +451,6 @@ function isKingInCheck(board, color) {
 function hasAnyLegalMove(color) {
     const board = getBoardState();
 
-    // Castling counts as a legal move too
     if (canCastle(color, 'kingside') || canCastle(color, 'queenside')) return true;
 
     for (let fr = 0; fr < 8; fr++)
@@ -499,7 +460,7 @@ function hasAnyLegalMove(color) {
             for (let tr = 0; tr < 8; tr++)
                 for (let tc = 0; tc < 8; tc++) {
                     if (fr === tr && fc === tc) continue;
-                    // Skip squares occupied by a friendly piece
+                    
                     if (board[tr][tc] && getPieceColor(board[tr][tc]) === color) continue;
                     if (!isValidMove(getSquare(fr, fc), getSquare(tr, tc), p)) continue;
                     if (!isKingInCheck(applyMove(board, fr, fc, tr, tc), color)) return true;
@@ -507,8 +468,6 @@ function hasAnyLegalMove(color) {
         }
     return false;
 }
-
-// ─── Move Validation ──────────────────────────────────────────────────────────
 
 function isValidMove(startSq, targetSq, pieceCode) {
     const sr = parseInt(startSq.dataset.row),  sc = parseInt(startSq.dataset.col);
@@ -527,9 +486,9 @@ function isValidMove(startSq, targetSq, pieceCode) {
             return !targetPiece && !getSquare(sr + dir, sc).querySelector('.piece');
         }
         if (ac === 1 && rd === dir) {
-            // Normal capture
+            
             if (targetPiece) return true;
-            // En passant capture
+            
             if (enPassantTarget && tr === enPassantTarget.row && tc === enPassantTarget.col) return true;
         }
         return false;
@@ -541,8 +500,6 @@ function isValidMove(startSq, targetSq, pieceCode) {
     if (piece === 'n') return (ar === 2 && ac === 1) || (ar === 1 && ac === 2);
     return false;
 }
-
-// ─── Castling ─────────────────────────────────────────────────────────────────
 
 function isCastlingMove(startSq, targetSq, pieceCode) {
     if (pieceCode.toLowerCase() !== 'k') return null;
@@ -596,7 +553,6 @@ function performCastle(color, side, onDone) {
     const kingTargetSq = getSquare(row, kingTargetCol);
     const rookTargetSq = getSquare(row, rookTargetCol);
 
-    // Animate king first, then rook
     animateMove(kingImg, kingSq, kingTargetSq, () => {
         kingTargetSq.appendChild(kingImg);
         animateMove(rookImg, rookSq, rookTargetSq, () => {
@@ -612,8 +568,6 @@ function performCastle(color, side, onDone) {
         });
     });
 }
-
-// ─── Pawn Promotion ───────────────────────────────────────────────────────────
 
 function checkPawnPromotion(targetSq, pieceCode, callback) {
     const isWhite = pieceCode === pieceCode.toUpperCase();
@@ -693,8 +647,6 @@ function checkPawnPromotion(targetSq, pieceCode, callback) {
     document.body.appendChild(overlay);
 }
 
-// ─── Check / Checkmate Highlight ──────────────────────────────────────────────
-
 function updateCheckHighlight(color) {
     document.querySelectorAll('.in-check').forEach(sq => sq.classList.remove('in-check'));
     const board = getBoardState();
@@ -713,8 +665,6 @@ function updateCheckHighlight(color) {
     return false;
 }
 
-// ─── Legal Move Highlights ────────────────────────────────────────────────────
-
 function showLegalMoves(fromSquare, pieceCode) {
     clearLegalMoves();
     const board = getBoardState();
@@ -727,13 +677,10 @@ function showLegalMoves(fromSquare, pieceCode) {
             const targetSq = getSquare(tr, tc);
             const targetPiece = targetSq.querySelector('.piece');
 
-            // Can't capture own piece
             if (targetPiece && getPieceColor(targetPiece.dataset.pieceCode) === turn) continue;
 
-            // Check basic move validity
             let valid = false;
 
-            // Castling
             const castleSide = isCastlingMove(fromSquare, targetSq, pieceCode);
             if (castleSide) {
                 valid = canCastle(turn, castleSide);
@@ -743,11 +690,9 @@ function showLegalMoves(fromSquare, pieceCode) {
 
             if (!valid) continue;
 
-            // Simulate to ensure king not left in check
             const after = applyMove(board, fr, fc, tr, tc);
             if (isKingInCheck(after, turn)) continue;
 
-            // Dot for empty square, ring for capture
             if (targetPiece) {
                 targetSq.classList.add('legal-capture');
             } else {
@@ -762,11 +707,9 @@ function clearLegalMoves() {
         .forEach(sq => sq.classList.remove('legal-move', 'legal-capture'));
 }
 
-// ─── Click Handler ────────────────────────────────────────────────────────────
-
 function handleSquareClick(clickedSquare) {
-    if (isAnimating) return; // ignore clicks during animation
-    if (!gameActive) return; // ignore clicks if game over / not started
+    if (isAnimating) return; 
+    if (!gameActive) return; 
 
     const clickedPiece = clickedSquare.querySelector('.piece');
 
@@ -783,7 +726,6 @@ function handleSquareClick(clickedSquare) {
     const selectedPieceImg = selectedSquare.querySelector('.piece');
     const pieceCode = selectedPieceImg.dataset.pieceCode;
 
-    // Switch selection
     if (clickedPiece && getPieceColor(clickedPiece.dataset.pieceCode) === turn) {
         selectedSquare.classList.remove('selected');
         clearLegalMoves();
@@ -793,7 +735,6 @@ function handleSquareClick(clickedSquare) {
         return;
     }
 
-    // ── Castling ──
     const castleSide = isCastlingMove(selectedSquare, clickedSquare, pieceCode);
     if (castleSide) {
         if (!canCastle(turn, castleSide)) {
@@ -819,7 +760,6 @@ function handleSquareClick(clickedSquare) {
         return;
     }
 
-    // ── Normal move validation ──
     if (!isValidMove(selectedSquare, clickedSquare, pieceCode)) {
         shakeSquare(selectedSquare);
         selectedSquare.classList.remove('selected');
@@ -839,7 +779,6 @@ function handleSquareClick(clickedSquare) {
         return;
     }
 
-    // ── Animate and commit ──
     const fromSq = selectedSquare;
     selectedSquare.classList.remove('selected');
     clearLegalMoves();
@@ -853,7 +792,6 @@ function handleSquareClick(clickedSquare) {
         }
         clickedSquare.appendChild(selectedPieceImg);
 
-        // En passant: remove the captured pawn from the board
         if (pieceCode.toLowerCase() === 'p' && fc !== tc && !clickedPiece) {
             const capturedRow = pieceCode === 'P' ? tr + 1 : tr - 1;
             const capturedSq = getSquare(capturedRow, tc);
@@ -864,14 +802,12 @@ function handleSquareClick(clickedSquare) {
             }
         }
 
-        // Update en passant target for next turn
         if (pieceCode.toLowerCase() === 'p' && Math.abs(tr - fr) === 2) {
             enPassantTarget = { row: (fr + tr) / 2, col: fc };
         } else {
             enPassantTarget = null;
         }
 
-        // Track moves for castling rights
         if (pieceCode === 'K') hasMoved['K'] = true;
         if (pieceCode === 'k') hasMoved['k'] = true;
         if (pieceCode === 'R' && fc === 0) hasMoved['WR_left'] = true;
@@ -890,21 +826,17 @@ function handleSquareClick(clickedSquare) {
     });
 }
 
-// ─── UI Helpers ───────────────────────────────────────────────────────────────
-
 function showMessage(msg) {
-    // Remove any existing check notification
+    
     const old = document.getElementById('check-notify');
     if (old) old.remove();
 
     const notify = document.createElement('div');
     notify.id = 'check-notify';
 
-    // Dark vignette overlay behind the board
     const vignette = document.createElement('div');
     vignette.id = 'check-vignette';
 
-    // The centred text badge
     const badge = document.createElement('div');
     badge.id = 'check-badge';
     badge.textContent = msg;
@@ -913,7 +845,6 @@ function showMessage(msg) {
     notify.appendChild(badge);
     document.body.appendChild(notify);
 
-    // Auto-dismiss after 1.8 s
     clearTimeout(notify._t);
     notify._t = setTimeout(() => {
         notify.classList.add('check-notify-out');
@@ -925,7 +856,6 @@ function showEndModal(msg) {
     gameActive = false;
     stopTimer();
 
-    // Parse out result type for styling
     const isCheckmate  = msg.includes('Checkmate');
     const isTimeout    = msg.includes('on time');
     const isDraw       = msg.includes('Draw') || msg.includes('Stalemate');
@@ -1021,7 +951,6 @@ function restartGame() {
     const msg = document.getElementById('status-msg');
     if (msg) msg.style.display = 'none';
 
-    // Reset timer displays
     document.getElementById('timer-white').textContent = '--:--';
     document.getElementById('timer-black').textContent = '--:--';
     document.getElementById('timer-white').classList.remove('low-time');
@@ -1033,7 +962,6 @@ function restartGame() {
     showModeModal();
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
 buildGameWrapper();
 createBoard();
 showModeModal();

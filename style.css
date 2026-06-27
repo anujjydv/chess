@@ -9,7 +9,6 @@ body {
     gap: 0;
 }
 
-/* ─── Game Mode Modal ─────────────────────────────────────── */
 #mode-modal-overlay {
     position: fixed;
     top: 0;
@@ -59,7 +58,6 @@ body {
     font-family: 'Georgia', serif;
 }
 
-/* Divider under subtitle */
 #mode-modal .modal-divider {
     width: 60px;
     height: 1px;
@@ -130,7 +128,6 @@ body {
     color: #a08060;
 }
 
-/* ─── Board Wrapper & Timer Panels ───────────────────────── */
 #game-wrapper {
     display: flex;
     flex-direction: column;
@@ -153,7 +150,6 @@ body {
 .timer-panel.top    { border-bottom: none; border-radius: 10px 10px 0 0; }
 .timer-panel.bottom { border-top: none;    border-radius: 0 0 10px 10px; }
 
-/* Captured pieces strip */
 .captured-strip {
     display: flex;
     flex-wrap: wrap;
@@ -201,7 +197,6 @@ body {
     transition: color 0.3s, border-color 0.3s, background 0.3s;
 }
 
-/* Active (running) timer */
 .timer-panel.active .timer-display {
     color: #ffffff;
     border-color: #e8c98a;
@@ -209,7 +204,6 @@ body {
     box-shadow: 0 0 10px rgba(232, 201, 138, 0.25);
 }
 
-/* Low time warning (<= 30s) */
 .timer-display.low-time {
     color: #ff3333 !important;
     border-color: #ff0000 !important;
@@ -231,7 +225,7 @@ body {
     width: 560px;
     height: 560px;
     border: 12px solid #5a3921;
-    position: relative; /* needed for absolute-positioned flying piece */
+    position: relative;
 }
 
 .square {
@@ -263,10 +257,9 @@ body {
     filter: drop-shadow(0px 5px 3px rgba(0, 0, 0, 0.6));
 }
 
-/* Flying piece during slide animation */
 .piece-flying {
     position: absolute;
-    width: 66px;   /* 95% of 70px */
+    width: 66px;
     height: 66px;
     pointer-events: none;
     filter: drop-shadow(0px 5px 3px rgba(0, 0, 0, 0.6));
@@ -276,7 +269,6 @@ body {
     will-change: left, top;
 }
 
-/* Shake animation for illegal moves */
 @keyframes shake {
     0%   { transform: translateX(0); }
     20%  { transform: translateX(-5px); }
@@ -290,7 +282,6 @@ body {
     animation: shake 0.25s ease;
 }
 
-/* Check pulse on king */
 @keyframes checkPulse {
     0%, 100% { background-color: rgba(200, 0, 0, 0.65); }
     50%       { background-color: rgba(255, 60, 60, 0.85); }
@@ -314,7 +305,6 @@ body {
 .white .coordinate { color: #a4764f; }
 .black .coordinate { color: #eaddca; }
 
-/* Legal move dot */
 .legal-move::after {
     content: '';
     position: absolute;
@@ -326,7 +316,6 @@ body {
     z-index: 10;
 }
 
-/* Legal capture ring */
 .legal-capture::after {
     content: '';
     position: absolute;
@@ -337,7 +326,6 @@ body {
     z-index: 10;
 }
 
-/* ─── Mode row chip sub-options ───────────────────────────── */
 .mode-row { align-items: center; cursor: default; }
 
 .blitz-chips {
@@ -371,7 +359,6 @@ body {
     transform: scale(1.08);
 }
 
-/* ─── Check Notification Overlay ─────────────────────────── */
 #check-notify {
     position: fixed;
     inset: 0;
@@ -427,7 +414,6 @@ body {
     to   { opacity: 0; }
 }
 
-/* ─── End Game Modal ──────────────────────────────────────── */
 @keyframes endFadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
